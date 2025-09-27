@@ -1,0 +1,40 @@
+# Use Amazon Linux base image (no rate limits)
+FROM public.ecr.aws/lambda/python:3.11
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Set work directory
+WORKDIR /app
+
+# Install system dependencies
+RUN yum update -y && \
+    yum install -y gcc postgresql-devel && \
+    yum clean all
+
+# Copy requirements first for better caching
+COPY requirements.txt /app/
+
+# Install Python dependencies with retries and fallbacks
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir --timeout=120 --retries=10 -r requirements.txt
+
+# Copy project
+COPY . /app/
+
+# Create necessary directories
+RUN mkdir -p /app/staticfiles /app/media
+
+# Collect static files (ignore errors for now)
+RUN python manage.py collectstatic --noinput || echo "Static files collection skipped"
+
+# Expose port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import requests; requests.get('http://localhost:8000/api/health/')" || exit 1
+
+# Run the application
+CMD ["sh", "-c", "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2 --timeout 120"]

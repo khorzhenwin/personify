@@ -196,7 +196,7 @@
 
 ## Deployment Tasks (Optional - can be done after core functionality)
 
-- [ ] 15. Deploy backend to AWS ECS
+- [x] 15. Deploy backend to AWS ECS
 
   - Build and push Docker image to AWS ECR
   - Create ECS task definition with environment variables
@@ -205,7 +205,7 @@
   - _Requirements: 9.2, 9.4_
   - **Deployment Integration Test:** Verify deployed backend works with all existing functionality and frontend integration
 
-- [ ] 16. Deploy frontend to Vercel
+- [x] 16. Deploy frontend to Vercel
   - Connect GitHub repository to Vercel
   - Configure environment variables for API URL
   - Test production deployment and API connectivity

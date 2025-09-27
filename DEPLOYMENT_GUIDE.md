@@ -2,6 +2,23 @@
 
 This guide covers deploying the Personal Finance Tracker to production using AWS ECS for the backend and Vercel for the frontend.
 
+## Quick Start
+
+For automated AWS ECS deployment, use our deployment scripts:
+
+```bash
+# Complete automated deployment
+./scripts/deploy-complete.sh
+
+# Or run individual steps
+./scripts/setup-iam-roles.sh
+./scripts/setup-aws-secrets.sh
+./scripts/deploy-to-ecs.sh
+./scripts/test-ecs-deployment.sh
+```
+
+For detailed instructions, see [AWS_ECS_DEPLOYMENT.md](AWS_ECS_DEPLOYMENT.md).
+
 ## Prerequisites
 
 - AWS CLI configured with appropriate permissions
