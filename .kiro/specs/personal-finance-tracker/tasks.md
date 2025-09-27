@@ -11,7 +11,7 @@
   - _Requirements: 9.1, 9.5_
   - **Integration Test Checkpoint:** Run full test suite to ensure project setup is working correctly
 
-- [ ] 2. Implement core data models with comprehensive tests
+- [x] 2. Implement core data models with comprehensive tests
 
   - Write tests for CustomUser model validation and constraints
   - Create CustomUser model extending AbstractUser with email as username
@@ -24,7 +24,7 @@
   - _Requirements: 1.1, 2.1, 3.1, 3.2_
   - **Integration Test Checkpoint:** Run all model tests and verify database migrations work correctly
 
-- [ ] 3. Create authentication system with TDD approach
+- [x] 3. Create authentication system with TDD approach
 
   - Write tests for user registration with email validation
   - Implement user registration endpoint with email format validation
@@ -37,7 +37,7 @@
   - _Requirements: 1.1, 1.2, 1.3, 1.5, 1.6_
   - **Integration Test Checkpoint:** Test complete authentication flow and verify all existing functionality still works
 
-- [ ] 4. Implement email service integration with ProtonMail
+- [x] 4. Implement email service integration with ProtonMail
   - Write tests for email service configuration and connection
   - Configure ProtonMail SMTP settings using environment variables
   - Write tests for welcome email sending after registration
