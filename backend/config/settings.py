@@ -175,15 +175,17 @@ SIMPLE_JWT = {
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
 
-# CORS settings
+# CORS settings - Temporarily allow all origins for debugging
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+# Fallback to specific origins if needed
 CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS',
-    default='http://localhost:3000,http://127.0.0.1:3000',
+    default='http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,https://personify-kzw.vercel.app',
     cast=lambda v: [s.strip() for s in v.split(',')]
 )
 
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_HEADERS = [
     'accept',
     'accept-encoding',
@@ -194,7 +196,11 @@ CORS_ALLOWED_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
+    'access-control-allow-origin',
+    'access-control-allow-headers',
+    'access-control-allow-methods',
 ]
+
 CORS_ALLOWED_METHODS = [
     'DELETE',
     'GET',
@@ -203,6 +209,23 @@ CORS_ALLOWED_METHODS = [
     'POST',
     'PUT',
 ]
+
+# Additional CORS settings
+CORS_PREFLIGHT_MAX_AGE = 86400
+CORS_ALLOW_HEADERS = CORS_ALLOWED_HEADERS
+
+# Enable CORS debugging
+import logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('corsheaders')
+logger.setLevel(logging.DEBUG)
+
+# Add debug logging for CORS
+print(f"CORS_ALLOW_ALL_ORIGINS: {CORS_ALLOW_ALL_ORIGINS}")
+print(f"CORS_ALLOWED_ORIGINS: {CORS_ALLOWED_ORIGINS}")
+print(f"CORS_ALLOW_CREDENTIALS: {CORS_ALLOW_CREDENTIALS}")
+print(f"CORS_ALLOWED_HEADERS: {CORS_ALLOWED_HEADERS}")
+print(f"CORS_ALLOWED_METHODS: {CORS_ALLOWED_METHODS}")
 
 # Email settings (ProtonMail)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

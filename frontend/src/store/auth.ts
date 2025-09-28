@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
+import { apiClient } from '@/lib/api/client';
 
 export interface User {
   id: number;
@@ -57,7 +58,18 @@ interface AuthState {
   exportData: (data: DataExportData) => Promise<void>;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// Use proxy in production (Vercel) to avoid mixed content issues
+const getApiBaseUrl = () => {
+  // If we're in the browser and on HTTPS, use the proxy
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    return '/api/proxy';
+  }
+  
+  // Otherwise use the direct backend URL
+  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 // Configure axios defaults
 axios.defaults.baseURL = API_BASE_URL;
@@ -192,7 +204,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ isLoading: true, error: null });
           
-          const response = await axios.put('/api/auth/profile-update/', data);
+          const response = await apiClient.put('/api/auth/profile-update/', data);
           const { user } = response.data;
           
           set({
@@ -214,14 +226,34 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ isLoading: true, error: null });
           
-          await axios.post('/api/auth/change-password/', data);
+          await apiClient.post('/api/auth/change-password/', data);
           
           set({
             isLoading: false,
             error: null,
           });
         } catch (error: any) {
-          const errorMessage = error.response?.data?.message || 'Password change failed';
+          let errorMessage = 'Password change failed';
+          
+          if (error.response?.data) {
+            const responseData = error.response.data;
+            if (responseData.message) {
+              errorMessage = responseData.message;
+            } else if (responseData.non_field_errors && Array.isArray(responseData.non_field_errors)) {
+              errorMessage = responseData.non_field_errors[0];
+            } else if (responseData.detail) {
+              errorMessage = responseData.detail;
+            } else {
+              // Handle field-specific errors
+              const fieldErrors = Object.values(responseData).flat();
+              if (fieldErrors.length > 0) {
+                errorMessage = fieldErrors[0] as string;
+              }
+            }
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          
           set({
             isLoading: false,
             error: errorMessage,
@@ -234,7 +266,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ isLoading: true, error: null });
           
-          const response = await axios.post('/api/auth/export-data/', data, {
+          const response = await apiClient.post('/api/auth/export-data/', data, {
             responseType: 'blob'
           });
           

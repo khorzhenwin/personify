@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { 
   Transaction, 
   CreateTransactionData, 
@@ -7,22 +6,7 @@ import {
   TransactionListResponse,
   Category
 } from '@/types/transaction';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
-// Create axios instance with auth interceptor
-const api = axios.create({
-  baseURL: API_BASE_URL,
-});
-
-// Add auth token to requests
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('auth_token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+import { apiClient as api } from './client';
 
 export const transactionApi = {
   // Get transactions with filters and pagination
