@@ -14,7 +14,48 @@ export const budgetApi = {
   getBudgetOverview: async (month?: string): Promise<BudgetOverview> => {
     const params = month ? `?month=${month}` : '';
     const response = await api.get(`/api/budgets/monthly_summary/${params}`);
-    return response.data;
+    const data = response.data;
+    
+    // Transform backend budget_details to frontend budgets format
+    interface BackendBudgetDetail {
+      budget_id: number;
+      category_id: number;
+      category_name: string;
+      category_color: string;
+      budget_amount: number;
+      spent_amount: number;
+      remaining_amount: number;
+      percentage_used: number;
+      status: string;
+      month: string;
+    }
+    
+    const budgets = (data.budget_details || []).map((detail: BackendBudgetDetail) => ({
+      budget: {
+        id: String(detail.budget_id),
+        category: {
+          id: String(detail.category_id),
+          name: detail.category_name,
+          color: detail.category_color,
+        },
+        amount: detail.budget_amount,
+        month: detail.month,
+        created_at: '',
+        updated_at: '',
+      },
+      spent: detail.spent_amount,
+      remaining: detail.remaining_amount,
+      percentage: detail.percentage_used,
+      is_exceeded: detail.status === 'over_budget',
+    }));
+    
+    return {
+      total_budgeted: data.total_budgeted,
+      total_spent: data.total_spent,
+      total_remaining: data.total_remaining,
+      budgets: budgets,
+      month: data.month,
+    };
   },
 
   // Get all budgets
