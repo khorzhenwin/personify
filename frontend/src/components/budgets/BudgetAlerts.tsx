@@ -202,7 +202,7 @@ export const BudgetAlerts = () => {
     }, 60000);
 
     return () => clearInterval(interval);
-  }, [currentMonth, fetchBudgetStatus]);
+  }, [currentMonth]); // Only depend on currentMonth
 
   const generateAlerts = (): AlertData[] => {
     if (!budgetStatus) return [];

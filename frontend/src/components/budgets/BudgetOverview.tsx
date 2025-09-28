@@ -206,7 +206,7 @@ export const BudgetOverview = () => {
 
   useEffect(() => {
     fetchBudgetOverview(currentMonth);
-  }, [currentMonth, fetchBudgetOverview]);
+  }, [currentMonth]); // Only depend on currentMonth
 
   const handleMonthChange = (value: string | null) => {
     if (value) {

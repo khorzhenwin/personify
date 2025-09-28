@@ -48,7 +48,7 @@ export const TransactionFilters: React.FC = () => {
   // Load categories on mount
   useEffect(() => {
     fetchCategories();
-  }, [fetchCategories]);
+  }, []); // Only run on mount
 
   // Update local filters when store filters change
   useEffect(() => {

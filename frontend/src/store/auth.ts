@@ -63,7 +63,8 @@ const getApiBaseUrl = () => {
   // Force direct backend URL in development (localhost)
   if (typeof window !== 'undefined' && 
       (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-    const directUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    // Use the ALB URL that was set when starting the dev server
+    const directUrl = 'http://finance-tracker-alb-996193229.ap-southeast-1.elb.amazonaws.com';
     console.log('Auth: Local development - using direct backend URL:', directUrl);
     return directUrl;
   }
@@ -77,15 +78,10 @@ const getApiBaseUrl = () => {
   }
   
   // Server-side or other environments - use direct backend URL
-  const directUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  const directUrl = process.env.NEXT_PUBLIC_API_URL || 'http://finance-tracker-alb-996193229.ap-southeast-1.elb.amazonaws.com';
   console.log('Auth: Server-side - using direct backend URL:', directUrl);
   return directUrl;
 };
-
-const API_BASE_URL = getApiBaseUrl();
-
-// Configure axios defaults
-axios.defaults.baseURL = API_BASE_URL;
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -96,12 +92,12 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       error: null,
 
-      login: async (credentials: LoginCredentials) => {
-        try {
-          set({ isLoading: true, error: null });
-          
-          const response = await axios.post('/api/auth/login/', credentials);
-          const { user, access } = response.data;
+          login: async (credentials: LoginCredentials) => {
+            try {
+              set({ isLoading: true, error: null });
+              
+              const response = await axios.post(`${getApiBaseUrl()}/api/auth/login/`, credentials);
+              const { user, access } = response.data;
           
           if (!user || !access) {
             throw new Error('Invalid response format: missing user or access token');
@@ -144,12 +140,12 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      register: async (userData: RegisterData) => {
-        try {
-          set({ isLoading: true, error: null });
-          
-          const response = await axios.post('/api/auth/register/', userData);
-          const { user, access } = response.data;
+          register: async (userData: RegisterData) => {
+            try {
+              set({ isLoading: true, error: null });
+              
+              const response = await axios.post(`${getApiBaseUrl()}/api/auth/register/`, userData);
+              const { user, access } = response.data;
           
           // Set axios default authorization header
           axios.defaults.headers.common['Authorization'] = `Bearer ${access}`;

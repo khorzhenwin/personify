@@ -360,7 +360,7 @@ export const CategoryManager = () => {
 
   useEffect(() => {
     fetchCategories();
-  }, [fetchCategories]);
+  }, []); // Only run on mount
 
   const handleEdit = (category: Category) => {
     setSelectedCategory(category);

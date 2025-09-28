@@ -55,7 +55,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
 
   useEffect(() => {
     fetchTransactions();
-  }, [fetchTransactions]);
+  }, []); // Only run on mount
 
   const handleEdit = (transaction: Transaction) => {
     setSelectedTransaction(transaction);

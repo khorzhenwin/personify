@@ -5,7 +5,8 @@ const getApiBaseUrl = () => {
   // Force direct backend URL in development (localhost)
   if (typeof window !== 'undefined' && 
       (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-    const directUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    // Use the ALB URL that was set when starting the dev server
+    const directUrl = 'http://finance-tracker-alb-996193229.ap-southeast-1.elb.amazonaws.com';
     console.log('ApiClient: Local development - using direct backend URL:', directUrl);
     return directUrl;
   }
@@ -19,20 +20,21 @@ const getApiBaseUrl = () => {
   }
   
   // Server-side or other environments - use direct backend URL
-  const directUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  const directUrl = process.env.NEXT_PUBLIC_API_URL || 'http://finance-tracker-alb-996193229.ap-southeast-1.elb.amazonaws.com';
   console.log('ApiClient: Server-side - using direct backend URL:', directUrl);
   return directUrl;
 };
 
-const API_BASE_URL = getApiBaseUrl();
+// Create axios instance with dynamic base URL
+export const apiClient = axios.create();
 
-// Create axios instance
-export const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-});
-
-// Add auth token interceptor
+// Set base URL dynamically for each request
 apiClient.interceptors.request.use((config) => {
+  // Set the base URL dynamically
+  if (!config.baseURL) {
+    config.baseURL = getApiBaseUrl();
+  }
+  
   // Get token from Zustand persist storage
   const authStorage = localStorage.getItem('auth-storage');
   if (authStorage) {
@@ -48,6 +50,7 @@ apiClient.interceptors.request.use((config) => {
   }
   return config;
 });
+
 
 // Response interceptor for handling auth errors
 apiClient.interceptors.response.use(
