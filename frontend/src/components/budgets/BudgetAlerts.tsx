@@ -70,7 +70,8 @@ const AlertCard = ({
       style={{
         borderRadius: '12px',
         border: `1px solid var(--mantine-color-${color}-3)`,
-        background: `linear-gradient(135deg, var(--mantine-color-${color}-0) 0%, var(--mantine-color-${color}-1) 100%)`,
+        backgroundImage: `linear-gradient(135deg, var(--mantine-color-${color}-0) 0%, var(--mantine-color-${color}-1) 100%)`,
+        backgroundColor: 'transparent',
         transition: 'all 0.3s ease',
       }}
       withCloseButton={false}

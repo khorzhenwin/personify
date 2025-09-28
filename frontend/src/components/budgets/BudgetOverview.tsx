@@ -58,7 +58,8 @@ const BudgetCard = ({ budgetStatus }: { budgetStatus: BudgetStatus }) => {
       p="lg"
       radius="md"
       style={{
-        background: `linear-gradient(135deg, ${budget.category.color}15 0%, ${budget.category.color}05 100%)`,
+        backgroundImage: `linear-gradient(135deg, ${budget.category.color}15 0%, ${budget.category.color}05 100%)`,
+        backgroundColor: 'transparent',
         border: `1px solid ${budget.category.color}30`,
         transition: 'all 0.3s ease',
         cursor: 'pointer',
@@ -145,7 +146,8 @@ const OverviewCard = ({
     p="lg"
     radius="md"
     style={{
-      background: `linear-gradient(135deg, var(--mantine-color-${color}-1) 0%, var(--mantine-color-${color}-0) 100%)`,
+      backgroundImage: `linear-gradient(135deg, var(--mantine-color-${color}-1) 0%, var(--mantine-color-${color}-0) 100%)`,
+      backgroundColor: 'transparent',
       border: `1px solid var(--mantine-color-${color}-3)`,
       transition: 'all 0.3s ease',
     }}

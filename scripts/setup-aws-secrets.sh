@@ -81,7 +81,7 @@ echo ""
 # Application Configuration
 echo -n "Allowed Hosts (comma-separated, e.g., your-domain.com,localhost): "
 read ALLOWED_HOSTS
-echo -n "CORS Allowed Origins (comma-separated, e.g., https://your-app.vercel.app): "
+echo -n "CORS Allowed Origins (comma-separated, e.g., https://personify-kzw.vercel.app): "
 read CORS_ORIGINS
 
 echo ""

@@ -124,7 +124,12 @@ export function RegistrationForm() {
       clearError();
       
       const { confirmPassword, ...registerData } = values;
-      await register(registerData);
+      // Add password_confirm field that the backend expects
+      const backendData = {
+        ...registerData,
+        password_confirm: confirmPassword,
+      };
+      await register(backendData as any);
       router.push('/dashboard');
     } catch (error) {
       // Error is handled by the store

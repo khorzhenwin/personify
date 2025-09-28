@@ -161,21 +161,24 @@ export const BudgetProgressChart = ({
   isLoading = false, 
   showRings = false 
 }: BudgetProgressChartProps) => {
+  // Add data validation
+  const safeData = Array.isArray(data) ? data : [];
+  
   const chartData = useMemo(() => {
-    return data.map(item => ({
+    return safeData.map(item => ({
       ...item,
-      name: item.category,
+      name: item?.category || 'Unknown',
     }));
-  }, [data]);
+  }, [safeData]);
 
   const summary = useMemo(() => {
-    const totalBudgeted = data.reduce((sum, item) => sum + item.budgeted, 0);
-    const totalSpent = data.reduce((sum, item) => sum + item.spent, 0);
-    const totalRemaining = data.reduce((sum, item) => sum + item.remaining, 0);
-    const overBudgetCount = data.filter(item => item.status === 'over').length;
+    const totalBudgeted = safeData.reduce((sum, item) => sum + (item?.budgeted || 0), 0);
+    const totalSpent = safeData.reduce((sum, item) => sum + (item?.spent || 0), 0);
+    const totalRemaining = safeData.reduce((sum, item) => sum + (item?.remaining || 0), 0);
+    const overBudgetCount = safeData.filter(item => item?.status === 'over').length;
     
     return { totalBudgeted, totalSpent, totalRemaining, overBudgetCount };
-  }, [data]);
+  }, [safeData]);
 
   if (isLoading) {
     return (
@@ -204,7 +207,7 @@ export const BudgetProgressChart = ({
     );
   }
 
-  if (!data.length) {
+  if (!safeData.length) {
     return (
       <Card p="lg" radius="md" className="modern-card">
         <Stack gap="md" align="center" py="xl">
@@ -272,7 +275,7 @@ export const BudgetProgressChart = ({
           </Group>
 
           <SimpleGrid cols={{ base: 2, sm: 3, lg: 4 }} spacing="md">
-            {data.map((item, index) => (
+            {safeData.map((item, index) => (
               <BudgetRingCard key={index} item={item} />
             ))}
           </SimpleGrid>
@@ -344,7 +347,7 @@ export const BudgetProgressChart = ({
 
         {/* Category Progress Bars */}
         <Stack gap="md">
-          {data.map((item, index) => (
+          {safeData.map((item, index) => (
             <Box key={index}>
               <Group justify="space-between" mb="xs">
                 <Text size="sm" fw={500}>

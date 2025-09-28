@@ -22,9 +22,9 @@ BACKEND_URL="${BACKEND_URL:-}"
 
 if [ -z "$FRONTEND_URL" ]; then
     echo -e "${RED}❌ FRONTEND_URL environment variable is required${NC}"
-    echo "Please set FRONTEND_URL to your deployed Vercel URL (e.g., https://your-app.vercel.app)"
+    echo "Please set FRONTEND_URL to your deployed Vercel URL (e.g., https://personify-kzw.vercel.app)"
     echo ""
-    echo "Usage: FRONTEND_URL=https://your-app.vercel.app ./scripts/test-vercel-deployment.sh"
+    echo "Usage: FRONTEND_URL=https://personify-kzw.vercel.app ./scripts/test-vercel-deployment.sh"
     exit 1
 fi
 

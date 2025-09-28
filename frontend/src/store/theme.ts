@@ -1,3 +1,4 @@
+import React from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -65,19 +66,22 @@ export const useThemeStore = create<ThemeState>()(
 export const useSystemColorSchemeDetection = () => {
   const setSystemColorScheme = useThemeStore((state) => state.setSystemColorScheme);
   
-  if (typeof window !== 'undefined') {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
-    const handleChange = (e: MediaQueryListEvent) => {
-      setSystemColorScheme(e.matches ? 'dark' : 'light');
-    };
-    
-    mediaQuery.addEventListener('change', handleChange);
-    
-    return () => {
-      mediaQuery.removeEventListener('change', handleChange);
-    };
-  }
-  
-  return () => {};
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      
+      const handleChange = (e: MediaQueryListEvent) => {
+        setSystemColorScheme(e.matches ? 'dark' : 'light');
+      };
+      
+      // Set initial value
+      setSystemColorScheme(mediaQuery.matches ? 'dark' : 'light');
+      
+      mediaQuery.addEventListener('change', handleChange);
+      
+      return () => {
+        mediaQuery.removeEventListener('change', handleChange);
+      };
+    }
+  }, [setSystemColorScheme]);
 };

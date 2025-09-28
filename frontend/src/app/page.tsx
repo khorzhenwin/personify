@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Center, Loader, Stack, Text } from '@mantine/core';
 import { useAuthStore } from '@/store/auth';
@@ -9,8 +9,15 @@ import { designTokens } from '@/theme';
 export default function HomePage() {
   const { isAuthenticated, isLoading } = useAuthStore();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     const timer = setTimeout(() => {
       if (!isLoading) {
         if (isAuthenticated) {
@@ -22,7 +29,18 @@ export default function HomePage() {
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, isLoading, router, mounted]);
+
+  if (!mounted) {
+    return (
+      <Center style={{ height: '100vh' }}>
+        <Stack align="center" gap="md">
+          <Loader size="lg" />
+          <Text size="sm">Loading...</Text>
+        </Stack>
+      </Center>
+    );
+  }
 
   return (
     <Center 

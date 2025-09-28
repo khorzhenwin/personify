@@ -51,7 +51,8 @@ const DashboardCard = ({
     radius="md"
     className="modern-card micro-interaction"
     style={{
-      background: `linear-gradient(135deg, var(--mantine-color-${color}-1) 0%, var(--mantine-color-${color}-0) 100%)`,
+      backgroundImage: `linear-gradient(135deg, var(--mantine-color-${color}-1) 0%, var(--mantine-color-${color}-0) 100%)`,
+      backgroundColor: 'transparent',
       border: `1px solid var(--mantine-color-${color}-3)`,
       cursor: onClick ? 'pointer' : 'default',
     }}
@@ -184,7 +185,8 @@ export default function DashboardPage() {
                         radius="md"
                         className="modern-card micro-interaction"
                         style={{
-                          background: 'linear-gradient(135deg, var(--mantine-color-blue-1) 0%, var(--mantine-color-blue-0) 100%)',
+                          backgroundImage: 'linear-gradient(135deg, var(--mantine-color-blue-1) 0%, var(--mantine-color-blue-0) 100%)',
+                          backgroundColor: 'transparent',
                           border: '1px solid var(--mantine-color-blue-3)',
                           cursor: 'pointer',
                         }}
@@ -216,7 +218,8 @@ export default function DashboardPage() {
                         radius="md"
                         className="modern-card micro-interaction"
                         style={{
-                          background: 'linear-gradient(135deg, var(--mantine-color-green-1) 0%, var(--mantine-color-green-0) 100%)',
+                          backgroundImage: 'linear-gradient(135deg, var(--mantine-color-green-1) 0%, var(--mantine-color-green-0) 100%)',
+                          backgroundColor: 'transparent',
                           border: '1px solid var(--mantine-color-green-3)',
                           cursor: 'pointer',
                         }}

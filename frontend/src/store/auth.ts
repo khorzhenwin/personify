@@ -76,20 +76,38 @@ export const useAuthStore = create<AuthState>()(
           set({ isLoading: true, error: null });
           
           const response = await axios.post('/api/auth/login/', credentials);
-          const { user, access_token } = response.data;
+          const { user, access } = response.data;
+          
+          if (!user || !access) {
+            throw new Error('Invalid response format: missing user or access token');
+          }
           
           // Set axios default authorization header
-          axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+          axios.defaults.headers.common['Authorization'] = `Bearer ${access}`;
           
           set({
             user,
-            token: access_token,
+            token: access,
             isAuthenticated: true,
             isLoading: false,
             error: null,
           });
         } catch (error: any) {
-          const errorMessage = error.response?.data?.message || 'Login failed';
+          let errorMessage = 'Login failed';
+          
+          if (error.response?.data) {
+            const data = error.response.data;
+            if (data.message) {
+              errorMessage = data.message;
+            } else if (data.non_field_errors && Array.isArray(data.non_field_errors)) {
+              errorMessage = data.non_field_errors[0];
+            } else if (data.detail) {
+              errorMessage = data.detail;
+            }
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          
           set({
             user: null,
             token: null,
@@ -106,20 +124,38 @@ export const useAuthStore = create<AuthState>()(
           set({ isLoading: true, error: null });
           
           const response = await axios.post('/api/auth/register/', userData);
-          const { user, access_token } = response.data;
+          const { user, access } = response.data;
           
           // Set axios default authorization header
-          axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+          axios.defaults.headers.common['Authorization'] = `Bearer ${access}`;
           
           set({
             user,
-            token: access_token,
+            token: access,
             isAuthenticated: true,
             isLoading: false,
             error: null,
           });
         } catch (error: any) {
-          const errorMessage = error.response?.data?.message || 'Registration failed';
+          let errorMessage = 'Registration failed';
+          
+          if (error.response?.data) {
+            const data = error.response.data;
+            if (data.message) {
+              errorMessage = data.message;
+            } else if (data.non_field_errors && Array.isArray(data.non_field_errors)) {
+              errorMessage = data.non_field_errors[0];
+            } else if (data.detail) {
+              errorMessage = data.detail;
+            } else {
+              // Handle field-specific errors
+              const fieldErrors = Object.values(data).flat();
+              if (fieldErrors.length > 0) {
+                errorMessage = fieldErrors[0] as string;
+              }
+            }
+          }
+          
           set({
             user: null,
             token: null,

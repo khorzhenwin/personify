@@ -57,24 +57,30 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 const CustomLegend = ({ payload, onCategoryClick, selectedCategory }: any) => {
   return (
     <Stack gap="xs" mt="md">
-      {payload?.map((entry: any, index: number) => (
-        <Group
-          key={index}
-          gap="xs"
-          align="center"
-          style={{
-            cursor: 'pointer',
-            padding: '8px',
-            borderRadius: '8px',
-            backgroundColor: selectedCategory === entry.payload.category 
-              ? 'var(--mantine-color-blue-0)' 
-              : 'transparent',
-            border: selectedCategory === entry.payload.category 
-              ? '1px solid var(--mantine-color-blue-3)' 
-              : '1px solid transparent',
-            transition: 'all 0.2s ease',
-          }}
-          onClick={() => onCategoryClick?.(entry.payload.category)}
+      {payload?.map((entry: any, index: number) => {
+        // Add null checks for entry and entry.payload
+        if (!entry || !entry.payload || !entry.payload.category) {
+          return null;
+        }
+        
+        return (
+          <Group
+            key={index}
+            gap="xs"
+            align="center"
+            style={{
+              cursor: 'pointer',
+              padding: '8px',
+              borderRadius: '8px',
+              backgroundColor: selectedCategory === entry.payload.category 
+                ? 'var(--mantine-color-blue-0)' 
+                : 'transparent',
+              border: selectedCategory === entry.payload.category 
+                ? '1px solid var(--mantine-color-blue-3)' 
+                : '1px solid transparent',
+              transition: 'all 0.2s ease',
+            }}
+            onClick={() => onCategoryClick?.(entry.payload.category)}
         >
           <Box
             w={12}
@@ -88,13 +94,14 @@ const CustomLegend = ({ payload, onCategoryClick, selectedCategory }: any) => {
             {entry.payload.category}
           </Text>
           <Badge variant="light" size="sm">
-            ${entry.payload.amount.toLocaleString()}
+            ${entry.payload.amount?.toLocaleString() || '0'}
           </Badge>
           <Text size="xs" c="dimmed" w={40} ta="right">
-            {entry.payload.percentage}%
+            {entry.payload.percentage || 0}%
           </Text>
         </Group>
-      ))}
+        );
+      }).filter(Boolean)}
     </Stack>
   );
 };
@@ -105,17 +112,20 @@ export const SpendingChart = ({
   onCategoryClick,
   selectedCategory 
 }: SpendingChartProps) => {
+  // Add data validation
+  const safeData = Array.isArray(data) ? data : [];
+  
   const chartData = useMemo(() => {
-    return data.map(item => ({
+    return safeData.map(item => ({
       ...item,
-      name: item.category,
-      value: item.amount,
+      name: item?.category || 'Unknown',
+      value: item?.amount || 0,
     }));
-  }, [data]);
+  }, [safeData]);
 
   const totalSpending = useMemo(() => {
-    return data.reduce((sum, item) => sum + item.amount, 0);
-  }, [data]);
+    return safeData.reduce((sum, item) => sum + (item?.amount || 0), 0);
+  }, [safeData]);
 
   if (isLoading) {
     return (
@@ -137,7 +147,7 @@ export const SpendingChart = ({
     );
   }
 
-  if (!data.length) {
+  if (!safeData.length) {
     return (
       <Card p="lg" radius="md" className="modern-card">
         <Stack gap="md" align="center" py="xl">

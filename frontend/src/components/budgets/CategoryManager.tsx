@@ -52,7 +52,8 @@ const CategoryCard = ({
     p="lg"
     radius="md"
     style={{
-      background: `linear-gradient(135deg, ${category.color}15 0%, ${category.color}05 100%)`,
+      backgroundImage: `linear-gradient(135deg, ${category.color}15 0%, ${category.color}05 100%)`,
+      backgroundColor: 'transparent',
       border: `1px solid ${category.color}30`,
       transition: 'all 0.3s ease',
       cursor: 'pointer',
@@ -250,7 +251,8 @@ const CategoryForm = ({
             p="md"
             radius="md"
             style={{
-              background: `linear-gradient(135deg, ${form.values.color}15 0%, ${form.values.color}05 100%)`,
+              backgroundImage: `linear-gradient(135deg, ${form.values.color}15 0%, ${form.values.color}05 100%)`,
+              backgroundColor: 'transparent',
               border: `1px solid ${form.values.color}30`,
               transition: 'all 0.3s ease',
             }}
@@ -405,7 +407,8 @@ export const CategoryManager = () => {
           onClick={openForm}
           className="animate-button transition-all duration-200 hover:scale-105"
           style={{
-            background: 'linear-gradient(135deg, var(--mantine-color-blue-6) 0%, var(--mantine-color-blue-7) 100%)',
+            backgroundImage: 'linear-gradient(135deg, var(--mantine-color-blue-6) 0%, var(--mantine-color-blue-7) 100%)',
+            backgroundColor: 'transparent',
           }}
         >
           Add Category

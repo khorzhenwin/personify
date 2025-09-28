@@ -13,7 +13,7 @@ NC='\033[0m' # No Color
 
 # Configuration
 BACKEND_URL="${BACKEND_URL:-http://localhost:8000}"
-FRONTEND_URL="${FRONTEND_URL:-http://localhost:3000}"
+FRONTEND_URL="${FRONTEND_URL:-https://personify-kzw.vercel.app}"
 
 echo -e "${YELLOW}🚀 Starting deployment verification tests...${NC}"
 
