@@ -513,6 +513,12 @@ class BudgetSerializer(serializers.ModelSerializer):
     percentage_used = serializers.SerializerMethodField()
     category_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
     
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Make category field optional when category_id is provided
+        if 'data' in kwargs and kwargs['data'] and 'category_id' in kwargs['data']:
+            self.fields['category'].required = False
+    
     def get_category_name(self, obj):
         """Get category name."""
         return obj.category.name if obj.category else None
@@ -624,8 +630,16 @@ class BudgetSerializer(serializers.ModelSerializer):
                             'category_id': 'Category not found or access denied.'
                         })
             else:
-                # Explicitly setting category_id to None means remove category
-                attrs['category'] = None
+                # Budget requires a category, so null is not allowed
+                raise serializers.ValidationError({
+                    'category_id': 'Budget must have a category.'
+                })
+        
+        # Ensure either category or category_id was provided
+        if 'category' not in attrs or attrs['category'] is None:
+            raise serializers.ValidationError({
+                'category': 'This field is required.'
+            })
         
         request = self.context.get('request')
         if request and request.user:

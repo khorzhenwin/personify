@@ -99,7 +99,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
       form.setValues({
         description: selectedTransaction.description,
         amount: selectedTransaction.amount,
-        category_id: selectedTransaction.category?.id || '',
+        category_id: selectedTransaction.category?.id ? String(selectedTransaction.category.id) : '',
         transaction_type: selectedTransaction.transaction_type,
         date: selectedTransaction.date,
       });
