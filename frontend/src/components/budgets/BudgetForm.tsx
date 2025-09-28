@@ -88,10 +88,13 @@ export const BudgetForm = ({ opened, onClose, month, budget }: BudgetFormProps) 
     setIsSubmitting(true);
     
     try {
+      // Convert month to YYYY-MM-DD format (first day of month)
+      const monthDate = `${month}-01`;
+      
       const data = {
-        category_id: values.category_id,
+        category_id: values.category_id, // Backend now supports 'category_id' field
         amount: values.amount,
-        month,
+        month: monthDate, // Backend expects YYYY-MM-DD format
       };
 
       if (budget) {

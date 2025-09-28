@@ -511,6 +511,7 @@ class BudgetSerializer(serializers.ModelSerializer):
     spent_amount = serializers.SerializerMethodField()
     remaining_amount = serializers.SerializerMethodField()
     percentage_used = serializers.SerializerMethodField()
+    category_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
     
     def get_category_name(self, obj):
         """Get category name."""
@@ -561,7 +562,7 @@ class BudgetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Budget
         fields = (
-            'id', 'category', 'category_name', 'category_color', 'amount', 
+            'id', 'category', 'category_id', 'category_name', 'category_color', 'amount', 
             'month', 'spent_amount', 'remaining_amount', 'percentage_used',
             'created_at', 'updated_at'
         )
@@ -606,8 +607,26 @@ class BudgetSerializer(serializers.ModelSerializer):
     
     def validate(self, attrs):
         """
-        Validate unique constraint for user, category, and month.
+        Convert category_id to category object and validate unique constraint for user, category, and month.
         """
+        # Handle category_id conversion (similar to TransactionSerializer)
+        if 'category_id' in attrs:
+            category_id = attrs.pop('category_id')
+            
+            if category_id is not None:
+                request = self.context.get('request')
+                if request and request.user:
+                    try:
+                        category = Category.objects.get(id=category_id, user=request.user)
+                        attrs['category'] = category
+                    except Category.DoesNotExist:
+                        raise serializers.ValidationError({
+                            'category_id': 'Category not found or access denied.'
+                        })
+            else:
+                # Explicitly setting category_id to None means remove category
+                attrs['category'] = None
+        
         request = self.context.get('request')
         if request and request.user:
             category = attrs.get('category')
