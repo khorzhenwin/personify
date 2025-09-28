@@ -60,6 +60,13 @@ interface AuthState {
 
 // Use proxy in production (Vercel) to avoid mixed content issues
 const getApiBaseUrl = () => {
+  // Force direct backend URL in development
+  if (process.env.NODE_ENV === 'development') {
+    const directUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    console.log('Auth: Development mode - using direct backend URL:', directUrl);
+    return directUrl;
+  }
+  
   // If we're in the browser and on HTTPS AND on Vercel domain, use the proxy
   if (typeof window !== 'undefined' && 
       window.location.protocol === 'https:' && 
