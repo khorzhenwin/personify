@@ -182,7 +182,15 @@ const AlertSkeleton = () => (
   </Card>
 );
 
-export const BudgetAlerts = () => {
+interface BudgetAlertsProps {
+  onAdjustBudget?: (budgetStatus: BudgetStatus) => void;
+  onViewTransactions?: (categoryId: string) => void;
+}
+
+export const BudgetAlerts = ({ 
+  onAdjustBudget, 
+  onViewTransactions 
+}: BudgetAlertsProps = {}) => {
   const {
     budgetStatus,
     isLoading,
@@ -256,13 +264,19 @@ export const BudgetAlerts = () => {
   };
 
   const handleAdjustBudget = (budgetStatus: BudgetStatus) => {
-    // This would typically open a budget edit modal
-    console.log('Adjust budget for:', budgetStatus.budget.category.name);
+    if (onAdjustBudget) {
+      onAdjustBudget(budgetStatus);
+    } else {
+      console.log('Adjust budget for:', budgetStatus.budget.category.name);
+    }
   };
 
   const handleViewTransactions = (categoryId: string) => {
-    // This would typically navigate to transactions filtered by category
-    console.log('View transactions for category:', categoryId);
+    if (onViewTransactions) {
+      onViewTransactions(categoryId);
+    } else {
+      console.log('View transactions for category:', categoryId);
+    }
   };
 
   if (error) {

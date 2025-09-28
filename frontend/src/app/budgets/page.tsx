@@ -12,6 +12,7 @@ import {
   Box
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { useRouter } from 'next/navigation';
 import { 
   IconWallet, 
   IconCategory, 
@@ -27,11 +28,29 @@ import {
   BudgetAlerts 
 } from '@/components/budgets';
 import { useBudgetStore } from '@/store/budgets';
+import { BudgetStatus, Budget } from '@/types/budget';
 
 export default function BudgetsPage() {
   const [activeTab, setActiveTab] = useState<string | null>('overview');
   const [budgetFormOpened, { open: openBudgetForm, close: closeBudgetForm }] = useDisclosure(false);
+  const [selectedBudget, setSelectedBudget] = useState<Budget | undefined>();
   const { currentMonth } = useBudgetStore();
+  const router = useRouter();
+
+  const handleAdjustBudget = (budgetStatus: BudgetStatus) => {
+    setSelectedBudget(budgetStatus.budget);
+    openBudgetForm();
+  };
+
+  const handleViewTransactions = (categoryId: string) => {
+    // Navigate to transactions page with category filter
+    router.push(`/transactions?category=${categoryId}`);
+  };
+
+  const handleBudgetFormClose = () => {
+    closeBudgetForm();
+    setSelectedBudget(undefined);
+  };
 
   return (
     <AuthGuard>
@@ -113,7 +132,10 @@ export default function BudgetsPage() {
               </Tabs.Panel>
 
               <Tabs.Panel value="alerts">
-                <BudgetAlerts />
+                <BudgetAlerts 
+                  onAdjustBudget={handleAdjustBudget}
+                  onViewTransactions={handleViewTransactions}
+                />
               </Tabs.Panel>
 
               <Tabs.Panel value="categories">
@@ -126,8 +148,9 @@ export default function BudgetsPage() {
         {/* Budget Form Modal */}
         <BudgetForm
           opened={budgetFormOpened}
-          onClose={closeBudgetForm}
+          onClose={handleBudgetFormClose}
           month={currentMonth}
+          budget={selectedBudget}
         />
       </AppShellLayout>
     </AuthGuard>

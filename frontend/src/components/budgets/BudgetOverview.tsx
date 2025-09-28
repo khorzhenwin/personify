@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Card,
   Grid,
@@ -15,10 +15,13 @@ import {
   Box,
   Badge,
   Center,
+  ActionIcon,
 } from '@mantine/core';
-import { IconAlertCircle, IconTrendingUp, IconTrendingDown, IconWallet } from '@tabler/icons-react';
+import { IconAlertCircle, IconTrendingUp, IconTrendingDown, IconWallet, IconEdit } from '@tabler/icons-react';
+import { useDisclosure } from '@mantine/hooks';
 import { useBudgetStore } from '@/store/budgets';
-import { BudgetStatus } from '@/types/budget';
+import { BudgetStatus, Budget } from '@/types/budget';
+import { BudgetForm } from './BudgetForm';
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-US', {
@@ -47,7 +50,13 @@ const generateMonthOptions = () => {
   return options;
 };
 
-const BudgetCard = ({ budgetStatus }: { budgetStatus: BudgetStatus }) => {
+const BudgetCard = ({ 
+  budgetStatus, 
+  onEdit 
+}: { 
+  budgetStatus: BudgetStatus;
+  onEdit: (budget: Budget) => void;
+}) => {
   const { budget, spent, remaining, percentage, is_exceeded } = budgetStatus;
   const progressColor = is_exceeded ? 'red' : percentage > 80 ? 'orange' : 'blue';
   
@@ -62,13 +71,12 @@ const BudgetCard = ({ budgetStatus }: { budgetStatus: BudgetStatus }) => {
         backgroundColor: 'transparent',
         border: `1px solid ${budget.category.color}30`,
         transition: 'all 0.3s ease',
-        cursor: 'pointer',
       }}
       className="hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
     >
       <Stack gap="md">
         <Group justify="space-between" align="flex-start">
-          <Box>
+          <Box flex={1}>
             <Text size="sm" c="dimmed" mb={4}>
               {budget.category.name}
             </Text>
@@ -76,11 +84,26 @@ const BudgetCard = ({ budgetStatus }: { budgetStatus: BudgetStatus }) => {
               {formatCurrency(spent)} / {formatCurrency(budget.amount)}
             </Text>
           </Box>
-          {is_exceeded && (
-            <Badge color="red" variant="light" size="sm">
-              Over Budget
-            </Badge>
-          )}
+          <Group gap="xs">
+            {is_exceeded && (
+              <Badge color="red" variant="light" size="sm">
+                Over Budget
+              </Badge>
+            )}
+            <ActionIcon
+              variant="subtle"
+              color="blue"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(budget);
+              }}
+              aria-label="Edit budget"
+              className="transition-all duration-200 hover:scale-110"
+            >
+              <IconEdit size={16} />
+            </ActionIcon>
+          </Group>
         </Group>
 
         <Center>
@@ -202,6 +225,9 @@ export const BudgetOverview = () => {
     setCurrentMonth,
   } = useBudgetStore();
 
+  const [editFormOpened, { open: openEditForm, close: closeEditForm }] = useDisclosure(false);
+  const [selectedBudget, setSelectedBudget] = useState<Budget | undefined>();
+
   const monthOptions = generateMonthOptions();
 
   useEffect(() => {
@@ -212,6 +238,18 @@ export const BudgetOverview = () => {
     if (value) {
       setCurrentMonth(value);
     }
+  };
+
+  const handleEditBudget = (budget: Budget) => {
+    setSelectedBudget(budget);
+    openEditForm();
+  };
+
+  const handleEditFormClose = () => {
+    closeEditForm();
+    setSelectedBudget(undefined);
+    // Refresh the budget overview after editing
+    fetchBudgetOverview(currentMonth);
   };
 
   if (error) {
@@ -317,7 +355,10 @@ export const BudgetOverview = () => {
           ) : budgetOverview?.budgets?.length ? (
             (budgetOverview.budgets || []).map((budgetStatus) => (
               <Grid.Col key={budgetStatus.budget.id} span={{ base: 12, sm: 6, lg: 4 }}>
-                <BudgetCard budgetStatus={budgetStatus} />
+                <BudgetCard 
+                  budgetStatus={budgetStatus} 
+                  onEdit={handleEditBudget}
+                />
               </Grid.Col>
             ))
           ) : (
@@ -339,6 +380,14 @@ export const BudgetOverview = () => {
           )}
         </Grid>
       </Box>
+
+      {/* Edit Budget Modal */}
+      <BudgetForm
+        opened={editFormOpened}
+        onClose={handleEditFormClose}
+        month={currentMonth}
+        budget={selectedBudget}
+      />
     </Stack>
   );
 };
