@@ -13,7 +13,7 @@ export const budgetApi = {
   // Get budget overview for a specific month
   getBudgetOverview: async (month?: string): Promise<BudgetOverview> => {
     const params = month ? `?month=${month}` : '';
-    const response = await api.get(`/api/budgets/overview/${params}`);
+    const response = await api.get(`/api/budgets/monthly_summary/${params}`);
     return response.data;
   },
 
@@ -21,14 +21,14 @@ export const budgetApi = {
   getBudgets: async (month?: string): Promise<Budget[]> => {
     const params = month ? `?month=${month}` : '';
     const response = await api.get(`/api/budgets/${params}`);
-    return response.data;
+    return response.data.results || response.data;
   },
 
   // Get budget status for a specific month
   getBudgetStatus: async (month?: string): Promise<BudgetStatus[]> => {
     const params = month ? `?month=${month}` : '';
     const response = await api.get(`/api/budgets/status/${params}`);
-    return response.data;
+    return response.data.results || response.data;
   },
 
   // Create budget

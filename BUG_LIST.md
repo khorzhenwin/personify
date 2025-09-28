@@ -1,0 +1,5 @@
+1. Please put the navigation sidebar on all of the pages so that i can navigate to the home dashboard.
+2. The display cards on the dashboard that calculates the total budget, total spend, and remaining is not fetching the values properly. I have data that is types of income and expense that should populate the `Remaining` and `Total Spent` cards but they are defaulting to $0.00.
+3. In the transactions table, I am unable to categorize my transactions due to the linking in the db. I have already checked the frontend call is passing categoryId of 1 but the response gives me category:null
+4. Whenever i try to create a budget, it is always `Failed to create a budget`. I suspect this is due to the request and response where fields are not being formatted properly.
+5. On home page (dashboard), i get spammed with alot of notification tiles of `Failed to load budgets`. Please minimize this and only send 1 alert.
