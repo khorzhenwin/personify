@@ -5,6 +5,8 @@ import { Container, Stack, Title, Group, Button, Modal } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { TransactionList, TransactionForm, TransactionFilters } from '@/components/transactions';
 import { Transaction } from '@/types/transaction';
+import { AppShellLayout } from '@/components/layout/AppShell';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 
 export default function TransactionsPage() {
   const [formModalOpen, setFormModalOpen] = useState(false);
@@ -31,42 +33,46 @@ export default function TransactionsPage() {
   };
 
   return (
-    <Container size="xl" py="xl">
-      <Stack gap="xl">
-        {/* Header */}
-        <Group justify="space-between" align="center">
-          <Title order={1}>Transactions</Title>
-          <Button
-            leftSection={<IconPlus size={16} />}
-            onClick={handleCreateTransaction}
-          >
-            Add Transaction
-          </Button>
-        </Group>
+    <AuthGuard>
+      <AppShellLayout>
+        <Container size="xl" py="xl">
+          <Stack gap="xl">
+            {/* Header */}
+            <Group justify="space-between" align="center">
+              <Title order={1}>Transactions</Title>
+              <Button
+                leftSection={<IconPlus size={16} />}
+                onClick={handleCreateTransaction}
+              >
+                Add Transaction
+              </Button>
+            </Group>
 
-        {/* Filters */}
-        <TransactionFilters />
+            {/* Filters */}
+            <TransactionFilters />
 
-        {/* Transaction List */}
-        <TransactionList
-          onEditTransaction={handleEditTransaction}
-          onCreateTransaction={handleCreateTransaction}
-        />
+            {/* Transaction List */}
+            <TransactionList
+              onEditTransaction={handleEditTransaction}
+              onCreateTransaction={handleCreateTransaction}
+            />
 
-        {/* Form Modal */}
-        <Modal
-          opened={formModalOpen}
-          onClose={handleFormCancel}
-          title={selectedTransaction ? 'Edit Transaction' : 'Add Transaction'}
-          size="lg"
-          centered
-        >
-          <TransactionForm
-            onSuccess={handleFormSuccess}
-            onCancel={handleFormCancel}
-          />
-        </Modal>
-      </Stack>
-    </Container>
+            {/* Form Modal */}
+            <Modal
+              opened={formModalOpen}
+              onClose={handleFormCancel}
+              title={selectedTransaction ? 'Edit Transaction' : 'Add Transaction'}
+              size="lg"
+              centered
+            >
+              <TransactionForm
+                onSuccess={handleFormSuccess}
+                onCancel={handleFormCancel}
+              />
+            </Modal>
+          </Stack>
+        </Container>
+      </AppShellLayout>
+    </AuthGuard>
   );
 }

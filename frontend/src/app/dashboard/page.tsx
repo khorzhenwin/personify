@@ -86,7 +86,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchBudgetOverview(currentMonth);
-  }, [currentMonth, fetchBudgetOverview]);
+  }, [currentMonth]); // Only depend on currentMonth
 
   const handleNavigateToTransactions = () => {
     router.push('/transactions');
@@ -127,7 +127,7 @@ export default function DashboardPage() {
                   <Grid.Col span={{ base: 12, sm: 6, lg: 3 }}>
                     <DashboardCard
                       title="Total Budget"
-                      amount={budgetOverview ? `$${budgetOverview.total_budget.toLocaleString()}` : '$0.00'}
+                      amount={budgetOverview ? `$${budgetOverview.total_budgeted.toLocaleString()}` : '$0.00'}
                       icon={<IconWallet size={20} />}
                       color="blue"
                       onClick={handleNavigateToBudgets}

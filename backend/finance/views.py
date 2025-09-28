@@ -1131,9 +1131,9 @@ class BudgetViewSet(ModelViewSet):
         
         return Response({
             'month': summary['month'],
-            'total_budgeted': str(summary['total_budgeted']),
-            'total_spent': str(summary['total_spent']),
-            'total_remaining': str(summary['total_remaining']),
+            'total_budgeted': float(summary['total_budgeted']),
+            'total_spent': float(summary['total_spent']),
+            'total_remaining': float(summary['total_remaining']),
             'overall_percentage_used': summary['overall_percentage_used'],
             'budget_count': summary['budget_count'],
             'budgets_over_limit': summary['budgets_over_limit'],

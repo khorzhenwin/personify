@@ -31,7 +31,7 @@ export interface UpdateBudgetData extends Partial<CreateBudgetData> {
 }
 
 export interface BudgetOverview {
-  total_budget: number;
+  total_budgeted: number;
   total_spent: number;
   total_remaining: number;
   budgets: BudgetStatus[];

@@ -21,6 +21,7 @@ interface BudgetState {
   currentMonth: string;
   isLoading: boolean;
   error: string | null;
+  lastNotificationTime: number;
 
   // Actions
   setBudgets: (budgets: Budget[]) => void;
@@ -48,7 +49,23 @@ interface BudgetState {
 
 const getCurrentMonth = () => {
   const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+};
+
+// Helper function to show notifications with deduplication (max 1 per 5 seconds)
+const showNotificationWithDeduplication = (get: any, set: any, title: string, message: string, color: string) => {
+  const now = Date.now();
+  const { lastNotificationTime } = get();
+  
+  // Only show notification if more than 5 seconds have passed since the last one
+  if (now - lastNotificationTime > 5000) {
+    notifications.show({
+      title,
+      message,
+      color,
+    });
+    set({ lastNotificationTime: now });
+  }
 };
 
 export const useBudgetStore = create<BudgetState>((set, get) => ({
@@ -61,6 +78,7 @@ export const useBudgetStore = create<BudgetState>((set, get) => ({
   currentMonth: getCurrentMonth(),
   isLoading: false,
   error: null,
+  lastNotificationTime: 0,
 
   // State setters
   setBudgets: (budgets) => set({ budgets }),
@@ -82,13 +100,9 @@ export const useBudgetStore = create<BudgetState>((set, get) => ({
       const overview = await budgetApi.getBudgetOverview(month);
       setBudgetOverview(overview);
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Failed to fetch budget overview';
+      const errorMessage = error.response?.data?.message || 'Failed to load budgets';
       setError(errorMessage);
-      notifications.show({
-        title: 'Error',
-        message: errorMessage,
-        color: 'red',
-      });
+      showNotificationWithDeduplication(get, set, 'Error', errorMessage, 'red');
     } finally {
       setLoading(false);
     }
@@ -105,11 +119,7 @@ export const useBudgetStore = create<BudgetState>((set, get) => ({
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || 'Failed to fetch budgets';
       setError(errorMessage);
-      notifications.show({
-        title: 'Error',
-        message: errorMessage,
-        color: 'red',
-      });
+      showNotificationWithDeduplication(get, set, 'Error', errorMessage, 'red');
     } finally {
       setLoading(false);
     }
@@ -126,11 +136,7 @@ export const useBudgetStore = create<BudgetState>((set, get) => ({
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || 'Failed to fetch budget status';
       setError(errorMessage);
-      notifications.show({
-        title: 'Error',
-        message: errorMessage,
-        color: 'red',
-      });
+      showNotificationWithDeduplication(get, set, 'Error', errorMessage, 'red');
     } finally {
       setLoading(false);
     }
