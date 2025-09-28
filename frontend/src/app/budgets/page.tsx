@@ -75,7 +75,7 @@ export default function BudgetsPage() {
                   '&:hover': {
                     transform: 'translateY(-1px)',
                   },
-                  '&[data-active="true"]': {
+                  '&[dataActive="true"]': {
                     background: 'linear-gradient(135deg, var(--mantine-color-blue-6) 0%, var(--mantine-color-blue-7) 100%)',
                   },
                 },

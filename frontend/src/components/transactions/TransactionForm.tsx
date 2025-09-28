@@ -91,7 +91,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
   // Load categories on mount
   useEffect(() => {
     fetchCategories();
-  }, [fetchCategories]);
+  }, []); // Only run on mount
 
   // Pre-fill form when editing
   useEffect(() => {
@@ -108,11 +108,17 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
 
   const handleSubmit = async (values: CreateTransactionData) => {
     try {
+      // Convert empty string category_id to undefined for proper backend handling
+      const processedValues = {
+        ...values,
+        category_id: values.category_id && values.category_id.trim() !== '' ? values.category_id : undefined,
+      };
+
       if (isEditing && selectedTransaction) {
-        await updateTransaction(selectedTransaction.id, values);
+        await updateTransaction(selectedTransaction.id, processedValues);
         setSelectedTransaction(null);
       } else {
-        await createTransaction(values);
+        await createTransaction(processedValues);
         form.reset();
       }
       onSuccess?.();

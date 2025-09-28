@@ -173,7 +173,7 @@ export const BudgetForm = ({ opened, onClose, month, budget }: BudgetFormProps) 
             onChange={handleCategoryChange}
             error={form.errors.category_id}
             required
-            itemComponent={({ option, ...others }) => (
+            renderOption={({ option, ...others }) => (
               <div {...others}>
                 <Group gap="sm">
                   <Box
