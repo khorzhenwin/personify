@@ -127,7 +127,7 @@ export default function DashboardPage() {
                   <Grid.Col span={{ base: 12, sm: 6, lg: 3 }}>
                     <DashboardCard
                       title="Total Budget"
-                      amount={budgetOverview ? `$${budgetOverview.total_budgeted.toLocaleString()}` : '$0.00'}
+                      amount={budgetOverview?.total_budgeted !== undefined ? `$${budgetOverview.total_budgeted.toLocaleString()}` : '$0.00'}
                       icon={<IconWallet size={20} />}
                       color="blue"
                       onClick={handleNavigateToBudgets}
@@ -137,7 +137,7 @@ export default function DashboardPage() {
                   <Grid.Col span={{ base: 12, sm: 6, lg: 3 }}>
                     <DashboardCard
                       title="Total Spent"
-                      amount={budgetOverview ? `$${budgetOverview.total_spent.toLocaleString()}` : '$0.00'}
+                      amount={budgetOverview?.total_spent !== undefined ? `$${budgetOverview.total_spent.toLocaleString()}` : '$0.00'}
                       icon={<IconTrendingUp size={20} />}
                       color="orange"
                       trend="up"
@@ -148,9 +148,9 @@ export default function DashboardPage() {
                   <Grid.Col span={{ base: 12, sm: 6, lg: 3 }}>
                     <DashboardCard
                       title="Remaining"
-                      amount={budgetOverview ? `$${budgetOverview.total_remaining.toLocaleString()}` : '$0.00'}
+                      amount={budgetOverview?.total_remaining !== undefined ? `$${budgetOverview.total_remaining.toLocaleString()}` : '$0.00'}
                       icon={<IconTrendingDown size={20} />}
-                      color={budgetOverview && budgetOverview.total_remaining < 0 ? 'red' : 'green'}
+                      color={budgetOverview?.total_remaining && budgetOverview.total_remaining < 0 ? 'red' : 'green'}
                       trend="down"
                     />
                   </Grid.Col>
@@ -158,7 +158,7 @@ export default function DashboardPage() {
                   <Grid.Col span={{ base: 12, sm: 6, lg: 3 }}>
                     <DashboardCard
                       title="Active Budgets"
-                      amount={budgetOverview ? budgetOverview.budgets.length.toString() : '0'}
+                      amount={budgetOverview?.budgets?.length?.toString() || '0'}
                       icon={<IconWallet size={20} />}
                       color="purple"
                       onClick={handleNavigateToBudgets}

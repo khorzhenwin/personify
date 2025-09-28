@@ -21,14 +21,34 @@ export const budgetApi = {
   getBudgets: async (month?: string): Promise<Budget[]> => {
     const params = month ? `?month=${month}` : '';
     const response = await api.get(`/api/budgets/${params}`);
-    return response.data.results || response.data;
+    const data = response.data;
+    
+    // Ensure we always return an array
+    if (Array.isArray(data)) {
+      return data;
+    } else if (data && Array.isArray(data.results)) {
+      return data.results;
+    } else {
+      console.warn('Budgets API returned unexpected format:', data);
+      return [];
+    }
   },
 
   // Get budget status for a specific month
   getBudgetStatus: async (month?: string): Promise<BudgetStatus[]> => {
     const params = month ? `?month=${month}` : '';
     const response = await api.get(`/api/budgets/status/${params}`);
-    return response.data.results || response.data;
+    const data = response.data;
+    
+    // Ensure we always return an array
+    if (Array.isArray(data)) {
+      return data;
+    } else if (data && Array.isArray(data.results)) {
+      return data.results;
+    } else {
+      console.warn('Budget status API returned unexpected format:', data);
+      return [];
+    }
   },
 
   // Create budget

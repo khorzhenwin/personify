@@ -205,7 +205,10 @@ export const BudgetAlerts = () => {
   }, [currentMonth]); // Only depend on currentMonth
 
   const generateAlerts = (): AlertData[] => {
-    if (!budgetStatus) return [];
+    // Safety check: ensure budgetStatus exists and is an array
+    if (!budgetStatus || !Array.isArray(budgetStatus)) {
+      return [];
+    }
 
     const alerts: AlertData[] = [];
 

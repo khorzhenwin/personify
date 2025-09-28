@@ -293,7 +293,7 @@ export const BudgetOverview = () => {
               title="Remaining"
               amount={budgetOverview?.total_remaining || 0}
               icon={<IconTrendingDown size={20} />}
-              color={budgetOverview && budgetOverview.total_remaining < 0 ? 'red' : 'green'}
+              color={budgetOverview?.total_remaining && budgetOverview.total_remaining < 0 ? 'red' : 'green'}
               trend="down"
             />
           )}
@@ -314,8 +314,8 @@ export const BudgetOverview = () => {
                 </Grid.Col>
               ))}
             </>
-          ) : budgetOverview?.budgets.length ? (
-            budgetOverview.budgets.map((budgetStatus) => (
+          ) : budgetOverview?.budgets?.length ? (
+            (budgetOverview.budgets || []).map((budgetStatus) => (
               <Grid.Col key={budgetStatus.budget.id} span={{ base: 12, sm: 6, lg: 4 }}>
                 <BudgetCard budgetStatus={budgetStatus} />
               </Grid.Col>
