@@ -515,9 +515,8 @@ class BudgetSerializer(serializers.ModelSerializer):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Make category field optional when category_id is provided
-        if 'data' in kwargs and kwargs['data'] and 'category_id' in kwargs['data']:
-            self.fields['category'].required = False
+        # Always make category field optional since we handle it in validate()
+        self.fields['category'].required = False
     
     def get_category_name(self, obj):
         """Get category name."""
@@ -635,10 +634,10 @@ class BudgetSerializer(serializers.ModelSerializer):
                     'category_id': 'Budget must have a category.'
                 })
         
-        # Ensure either category or category_id was provided
+        # Ensure a category was provided (either directly or via category_id)
         if 'category' not in attrs or attrs['category'] is None:
             raise serializers.ValidationError({
-                'category': 'This field is required.'
+                'category_id': 'This field is required.'
             })
         
         request = self.context.get('request')
