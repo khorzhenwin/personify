@@ -2,8 +2,10 @@ import axios from 'axios';
 
 // Use proxy in production (Vercel) to avoid mixed content issues
 const getApiBaseUrl = () => {
-  // If we're in the browser and on HTTPS, use the proxy
-  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+  // If we're in the browser and on HTTPS AND on Vercel domain, use the proxy
+  if (typeof window !== 'undefined' && 
+      window.location.protocol === 'https:' && 
+      window.location.hostname.includes('vercel.app')) {
     return '/api/proxy';
   }
   

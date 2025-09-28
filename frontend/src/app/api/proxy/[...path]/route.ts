@@ -50,9 +50,13 @@ async function handleRequest(
   method: string
 ) {
   try {
-    const path = params.path.join('/');
-    // Don't add /api prefix since it's already included in the path
-    const url = `${BACKEND_URL}/${path}`;
+    // Await params to comply with Next.js 15 requirements
+    const { path: pathArray } = await params;
+    const path = pathArray.join('/');
+    // The path already includes 'api', so we construct the full URL
+    // Django expects trailing slashes for most endpoints
+    const pathWithSlash = path.endsWith('/') ? path : `${path}/`;
+    const url = `${BACKEND_URL}/${pathWithSlash}`;
     
     // Get search params from the original request
     const searchParams = request.nextUrl.searchParams;
@@ -60,10 +64,16 @@ async function handleRequest(
       ? `${url}?${searchParams.toString()}` 
       : url;
 
-    // Prepare headers
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
+    // Prepare headers - copy all important headers from the original request
+    const headers: HeadersInit = {};
+
+    // Copy content-type if present
+    const contentType = request.headers.get('content-type');
+    if (contentType) {
+      headers['Content-Type'] = contentType;
+    } else if (method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS') {
+      headers['Content-Type'] = 'application/json';
+    }
 
     // Forward authorization header if present
     const authHeader = request.headers.get('authorization');
@@ -75,6 +85,18 @@ async function handleRequest(
     const userAgent = request.headers.get('user-agent');
     if (userAgent) {
       headers['User-Agent'] = userAgent;
+    }
+
+    // Forward accept header
+    const accept = request.headers.get('accept');
+    if (accept) {
+      headers['Accept'] = accept;
+    }
+
+    // Forward x-requested-with header
+    const xRequestedWith = request.headers.get('x-requested-with');
+    if (xRequestedWith) {
+      headers['X-Requested-With'] = xRequestedWith;
     }
 
     // Prepare request options
@@ -95,30 +117,46 @@ async function handleRequest(
       }
     }
 
-    console.log(`Proxying ${method} request to: ${fullUrl}`);
+    // Log proxy requests for debugging
+    console.log(`Proxying ${method} ${fullUrl}`);
 
     // Make the request to the backend
     const response = await fetch(fullUrl, requestOptions);
 
-    // Get response body
+    // Get response body and handle different content types
+    const responseContentType = response.headers.get('content-type');
     let responseBody;
-    const contentType = response.headers.get('content-type');
+    let isJson = false;
     
-    if (contentType?.includes('application/json')) {
+    if (responseContentType?.includes('application/json')) {
       try {
         responseBody = await response.json();
+        isJson = true;
       } catch {
         responseBody = await response.text();
+        isJson = false;
       }
     } else {
       responseBody = await response.text();
+      isJson = false;
     }
 
-    // Create response with CORS headers
-    const nextResponse = NextResponse.json(responseBody, {
-      status: response.status,
-      statusText: response.statusText,
-    });
+    // Create response with proper content type
+    let nextResponse;
+    if (isJson) {
+      nextResponse = NextResponse.json(responseBody, {
+        status: response.status,
+        statusText: response.statusText,
+      });
+    } else {
+      nextResponse = new NextResponse(responseBody, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: {
+          'Content-Type': responseContentType || 'text/plain',
+        },
+      });
+    }
 
     // Add CORS headers
     nextResponse.headers.set('Access-Control-Allow-Origin', '*');
