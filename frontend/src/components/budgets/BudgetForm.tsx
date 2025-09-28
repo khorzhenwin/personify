@@ -88,8 +88,8 @@ export const BudgetForm = ({ opened, onClose, month, budget }: BudgetFormProps) 
     setIsSubmitting(true);
     
     try {
-      // Convert month to YYYY-MM-DD format (first day of month)
-      const monthDate = `${month}-01`;
+      // Month is already in YYYY-MM-DD format from the store
+      const monthDate = month;
       
       const data = {
         category_id: values.category_id, // Backend now supports 'category_id' field
