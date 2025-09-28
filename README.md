@@ -2,6 +2,16 @@
 
 A modern, full-stack personal finance management application built with Django REST Framework and Next.js TypeScript. This production-ready application helps users take control of their financial life through comprehensive transaction management, smart budgeting, and insightful analytics.
 
+## Appendix
+-- Note that not all of the functionality works, this remains as a POC --
+<img width="1718" height="949" alt="image" src="https://github.com/user-attachments/assets/20c1ff26-2e32-4d24-950a-63dc65dd7177" />
+<img width="1722" height="953" alt="image" src="https://github.com/user-attachments/assets/70ab47a6-07b3-4f09-9eb7-6404b5584e9a" />
+<img width="1715" height="955" alt="image" src="https://github.com/user-attachments/assets/99277b7e-1b4f-4058-b4d1-f0c65d180246" />
+<img width="1717" height="954" alt="image" src="https://github.com/user-attachments/assets/ae7d7808-fd75-42e0-a08d-6e27abab4794" />
+<img width="1721" height="954" alt="image" src="https://github.com/user-attachments/assets/b74fe421-ed74-4e3d-b649-5cc613d2baaa" />
+<img width="1724" height="955" alt="image" src="https://github.com/user-attachments/assets/01177cdf-a1ff-4f3e-b055-cf40491988be" />
+
+
 ## 🚀 Features
 
 ### Core Functionality
