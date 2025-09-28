@@ -2,10 +2,11 @@ import axios from 'axios';
 
 // Use proxy in production (Vercel) to avoid mixed content issues
 const getApiBaseUrl = () => {
-  // Force direct backend URL in development
-  if (process.env.NODE_ENV === 'development') {
+  // Force direct backend URL in development (localhost)
+  if (typeof window !== 'undefined' && 
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
     const directUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-    console.log('ApiClient: Development mode - using direct backend URL:', directUrl);
+    console.log('ApiClient: Local development - using direct backend URL:', directUrl);
     return directUrl;
   }
   
@@ -17,9 +18,9 @@ const getApiBaseUrl = () => {
     return '/api/proxy';
   }
   
-  // Otherwise use the direct backend URL
+  // Server-side or other environments - use direct backend URL
   const directUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-  console.log('ApiClient: Using direct backend URL:', directUrl);
+  console.log('ApiClient: Server-side - using direct backend URL:', directUrl);
   return directUrl;
 };
 
