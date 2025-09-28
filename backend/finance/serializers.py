@@ -367,6 +367,7 @@ class TransactionSerializer(serializers.ModelSerializer):
     """
     category_name = serializers.SerializerMethodField()
     category_color = serializers.SerializerMethodField()
+    category_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
     
     def get_category_name(self, obj):
         """Get category name or None if no category."""
@@ -379,7 +380,7 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = (
-            'id', 'amount', 'description', 'category', 'category_name', 
+            'id', 'amount', 'description', 'category', 'category_id', 'category_name', 
             'category_color', 'transaction_type', 'date', 'created_at', 'updated_at'
         )
         read_only_fields = ('id', 'created_at', 'updated_at', 'category_name', 'category_color')
@@ -397,22 +398,6 @@ class TransactionSerializer(serializers.ModelSerializer):
         
         return value
     
-    def validate_category(self, value):
-        """
-        Validate that category belongs to the current user.
-        """
-        # Handle empty string as None
-        if value == '':
-            value = None
-            
-        if value is not None:
-            request = self.context.get('request')
-            if request and request.user:
-                if value.user != request.user:
-                    raise serializers.ValidationError(
-                        "You can only assign your own categories to transactions."
-                    )
-        return value
     
     def validate_date(self, value):
         """
@@ -422,6 +407,27 @@ class TransactionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Transaction date cannot be in the future.")
         return value
     
+    def validate(self, attrs):
+        """
+        Convert category_id to category object and validate.
+        """
+        category_id = attrs.pop('category_id', None)
+        
+        if category_id is not None:
+            request = self.context.get('request')
+            if request and request.user:
+                try:
+                    category = Category.objects.get(id=category_id, user=request.user)
+                    attrs['category'] = category
+                except Category.DoesNotExist:
+                    raise serializers.ValidationError({
+                        'category_id': 'Category not found or access denied.'
+                    })
+        else:
+            attrs['category'] = None
+            
+        return attrs
+    
     def create(self, validated_data):
         """
         Create transaction with current user.
@@ -430,6 +436,12 @@ class TransactionSerializer(serializers.ModelSerializer):
         if request and request.user:
             validated_data['user'] = request.user
         return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        """
+        Update transaction with proper category handling.
+        """
+        return super().update(instance, validated_data)
 
 
 class TransactionCreateSerializer(TransactionSerializer):
