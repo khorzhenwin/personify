@@ -25,7 +25,15 @@ export const transactionApi = {
     params.append('limit', limit.toString());
 
     const response = await api.get(`/api/transactions/?${params.toString()}`);
-    return response.data;
+    const data = response.data;
+    
+    // Ensure we return a proper TransactionListResponse structure
+    return {
+      results: Array.isArray(data?.results) ? data.results : [],
+      count: data?.count || 0,
+      next: data?.next || null,
+      previous: data?.previous || null,
+    };
   },
 
   // Get single transaction
@@ -72,7 +80,16 @@ export const categoryApi = {
   // Get categories
   getCategories: async (): Promise<Category[]> => {
     const response = await api.get('/api/categories/');
-    return response.data;
+    // Handle both paginated and non-paginated responses
+    const data = response.data;
+    if (data && Array.isArray(data.results)) {
+      return data.results;
+    } else if (Array.isArray(data)) {
+      return data;
+    } else {
+      console.warn('Categories API returned unexpected format:', data);
+      return [];
+    }
   },
 
   // Create category

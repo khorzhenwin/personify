@@ -6,11 +6,14 @@ const getApiBaseUrl = () => {
   if (typeof window !== 'undefined' && 
       window.location.protocol === 'https:' && 
       window.location.hostname.includes('vercel.app')) {
+    console.log('ApiClient: Using proxy for production');
     return '/api/proxy';
   }
   
   // Otherwise use the direct backend URL
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  const directUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  console.log('ApiClient: Using direct backend URL:', directUrl);
+  return directUrl;
 };
 
 const API_BASE_URL = getApiBaseUrl();

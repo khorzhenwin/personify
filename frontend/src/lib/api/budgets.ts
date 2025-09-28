@@ -60,7 +60,16 @@ export const categoryApi = {
   // Get all categories
   getCategories: async (): Promise<Category[]> => {
     const response = await api.get('/api/categories/');
-    return response.data;
+    // Handle both paginated and non-paginated responses
+    const data = response.data;
+    if (data && Array.isArray(data.results)) {
+      return data.results;
+    } else if (Array.isArray(data)) {
+      return data;
+    } else {
+      console.warn('Categories API returned unexpected format:', data);
+      return [];
+    }
   },
 
   // Create category
