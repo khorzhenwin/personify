@@ -51,7 +51,8 @@ async function handleRequest(
 ) {
   try {
     const path = params.path.join('/');
-    const url = `${BACKEND_URL}/api/${path}`;
+    // Don't add /api prefix since it's already included in the path
+    const url = `${BACKEND_URL}/${path}`;
     
     // Get search params from the original request
     const searchParams = request.nextUrl.searchParams;
