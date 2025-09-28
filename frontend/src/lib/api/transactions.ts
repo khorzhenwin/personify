@@ -8,6 +8,18 @@ import {
 } from '@/types/transaction';
 import { apiClient as api } from './client';
 
+// Helper function to transform backend transaction response to frontend format
+const transformTransaction = (backendTransaction: any): Transaction => {
+  return {
+    ...backendTransaction,
+    category: backendTransaction.category_name ? {
+      id: String(backendTransaction.category),
+      name: backendTransaction.category_name,
+      color: backendTransaction.category_color || '#6B7280',
+    } : null,
+  };
+};
+
 export const transactionApi = {
   // Get transactions with filters and pagination
   getTransactions: async (filters: TransactionFilters = {}, page = 1, limit = 20): Promise<TransactionListResponse> => {
@@ -28,8 +40,9 @@ export const transactionApi = {
     const data = response.data;
     
     // Ensure we return a proper TransactionListResponse structure
+    const transactions = Array.isArray(data?.results) ? data.results : [];
     return {
-      results: Array.isArray(data?.results) ? data.results : [],
+      results: transactions.map(transformTransaction),
       count: data?.count || 0,
       next: data?.next || null,
       previous: data?.previous || null,
@@ -39,19 +52,19 @@ export const transactionApi = {
   // Get single transaction
   getTransaction: async (id: string): Promise<Transaction> => {
     const response = await api.get(`/api/transactions/${id}/`);
-    return response.data;
+    return transformTransaction(response.data);
   },
 
   // Create transaction
   createTransaction: async (data: CreateTransactionData): Promise<Transaction> => {
     const response = await api.post('/api/transactions/', data);
-    return response.data;
+    return transformTransaction(response.data);
   },
 
   // Update transaction
   updateTransaction: async (id: string, data: UpdateTransactionData): Promise<Transaction> => {
     const response = await api.put(`/api/transactions/${id}/`, data);
-    return response.data;
+    return transformTransaction(response.data);
   },
 
   // Delete transaction
