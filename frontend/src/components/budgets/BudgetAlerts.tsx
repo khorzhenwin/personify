@@ -192,35 +192,37 @@ export const BudgetAlerts = ({
   onViewTransactions 
 }: BudgetAlertsProps = {}) => {
   const {
-    budgetStatus,
+    budgetOverview,
     isLoading,
     error,
-    fetchBudgetStatus,
+    fetchBudgetOverview,
     currentMonth,
   } = useBudgetStore();
 
   const [dismissedAlerts, setDismissedAlerts] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    fetchBudgetStatus(currentMonth);
+    fetchBudgetOverview(currentMonth);
     
     // Auto-refresh alerts every minute
     const interval = setInterval(() => {
-      fetchBudgetStatus(currentMonth);
+      fetchBudgetOverview(currentMonth);
     }, 60000);
 
     return () => clearInterval(interval);
   }, [currentMonth]); // Only depend on currentMonth
 
   const generateAlerts = (): AlertData[] => {
-    // Safety check: ensure budgetStatus exists and is an array
-    if (!budgetStatus || !Array.isArray(budgetStatus)) {
+    // Safety check: ensure budgetOverview exists and has budgets array
+    if (!budgetOverview?.budgets || !Array.isArray(budgetOverview.budgets)) {
+      console.log('BudgetAlerts: No budget data available', { budgetOverview });
       return [];
     }
 
+    console.log('BudgetAlerts: Processing budgets for alerts', budgetOverview.budgets);
     const alerts: AlertData[] = [];
 
-    budgetStatus.forEach((status) => {
+    budgetOverview.budgets.forEach((status) => {
       const alertId = `${status.budget.id}-${status.budget.month}`;
       
       if (dismissedAlerts.has(alertId)) return;
