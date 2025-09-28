@@ -129,8 +129,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
     onCancel?.();
   };
 
-  const categoryOptions = categories.map((category) => ({
-    value: category.id,
+  const categoryOptions = (categories || []).map((category) => ({
+    value: String(category.id),
     label: category.name,
     color: category.color,
   }));
@@ -215,7 +215,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
                       w={12}
                       h={12}
                       style={{
-                        backgroundColor: categoryOptions.find(c => c.value === option.value)?.color || designTokens.colors.gray[400],
+                        backgroundColor: categoryOptions.find(c => c.value === String(option.value))?.color || designTokens.colors.gray[400],
                         borderRadius: '50%',
                       }}
                     />

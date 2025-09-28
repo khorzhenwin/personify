@@ -82,8 +82,8 @@ export const TransactionFilters: React.FC = () => {
     clearFilters();
   };
 
-  const categoryOptions = categories.map((category) => ({
-    value: category.id,
+  const categoryOptions = (categories || []).map((category) => ({
+    value: String(category.id),
     label: category.name,
     color: category.color,
   }));
@@ -103,7 +103,7 @@ export const TransactionFilters: React.FC = () => {
     }
     
     if (filters.category_id) {
-      const category = categories.find(c => c.id === filters.category_id);
+      const category = categories.find(c => String(c.id) === String(filters.category_id));
       active.push({ 
         key: 'category_id', 
         label: `Category: ${category?.name || 'Unknown'}`, 
@@ -260,7 +260,7 @@ export const TransactionFilters: React.FC = () => {
                 },
               }}
               renderOption={({ option }) => {
-                const categoryOption = categoryOptions.find(c => c.value === option.value);
+                const categoryOption = categoryOptions.find(c => c.value === String(option.value));
                 return (
                   <Group gap="sm">
                     {categoryOption && (
