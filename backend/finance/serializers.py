@@ -411,20 +411,23 @@ class TransactionSerializer(serializers.ModelSerializer):
         """
         Convert category_id to category object and validate.
         """
-        category_id = attrs.pop('category_id', None)
-        
-        if category_id is not None:
-            request = self.context.get('request')
-            if request and request.user:
-                try:
-                    category = Category.objects.get(id=category_id, user=request.user)
-                    attrs['category'] = category
-                except Category.DoesNotExist:
-                    raise serializers.ValidationError({
-                        'category_id': 'Category not found or access denied.'
-                    })
-        else:
-            attrs['category'] = None
+        # Only process category_id if it's explicitly provided
+        if 'category_id' in attrs:
+            category_id = attrs.pop('category_id')
+            
+            if category_id is not None:
+                request = self.context.get('request')
+                if request and request.user:
+                    try:
+                        category = Category.objects.get(id=category_id, user=request.user)
+                        attrs['category'] = category
+                    except Category.DoesNotExist:
+                        raise serializers.ValidationError({
+                            'category_id': 'Category not found or access denied.'
+                        })
+            else:
+                # Explicitly setting category_id to None means remove category
+                attrs['category'] = None
             
         return attrs
     

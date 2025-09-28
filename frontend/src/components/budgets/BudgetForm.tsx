@@ -62,7 +62,7 @@ export const BudgetForm = ({ opened, onClose, month, budget }: BudgetFormProps) 
 
   const form = useForm<FormValues>({
     initialValues: {
-      category_id: budget?.category.id || '',
+      category_id: budget?.category.id ? String(budget.category.id) : '',
       amount: budget?.amount || 500,
     },
     validate: {
@@ -76,10 +76,10 @@ export const BudgetForm = ({ opened, onClose, month, budget }: BudgetFormProps) 
       fetchCategories();
       if (budget) {
         form.setValues({
-          category_id: budget.category.id,
+          category_id: String(budget.category.id),
           amount: budget.amount,
         });
-        setSelectedCategory(budget.category.id);
+        setSelectedCategory(String(budget.category.id));
       }
     }
   }, [opened, budget, fetchCategories]);
@@ -117,10 +117,10 @@ export const BudgetForm = ({ opened, onClose, month, budget }: BudgetFormProps) 
     }
   };
 
-  const selectedCategoryData = categories.find(cat => cat.id === selectedCategory);
+  const selectedCategoryData = categories.find(cat => String(cat.id) === selectedCategory);
 
   const categorySelectData = categories.map(category => ({
-    value: category.id,
+    value: String(category.id),
     label: category.name,
     color: category.color,
   }));

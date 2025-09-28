@@ -91,7 +91,7 @@ class TestTransactionCreation:
     
     def test_create_transaction_with_valid_data_success(self, authenticated_client, category, sample_transaction_data):
         """Test creating a transaction with all valid required fields."""
-        sample_transaction_data['category'] = category.id
+        sample_transaction_data['category_id'] = category.id
         
         response = authenticated_client.post(
             reverse('transaction-list'),
@@ -147,7 +147,7 @@ class TestTransactionCreation:
         transaction_data = {
             'amount': '2500.00',
             'description': 'Monthly salary',
-            'category': category.id,
+            'category_id': category.id,
             'transaction_type': 'income',
             'date': '2024-01-01'
         }
@@ -167,7 +167,7 @@ class TestTransactionCreation:
         """Test that creating transaction without amount fails."""
         transaction_data = {
             'description': 'Missing amount transaction',
-            'category': category.id,
+            'category_id': category.id,
             'transaction_type': 'expense',
             'date': '2024-01-15'
         }
@@ -185,7 +185,7 @@ class TestTransactionCreation:
         """Test that creating transaction without description fails."""
         transaction_data = {
             'amount': '50.00',
-            'category': category.id,
+            'category_id': category.id,
             'transaction_type': 'expense',
             'date': '2024-01-15'
         }
@@ -204,7 +204,7 @@ class TestTransactionCreation:
         transaction_data = {
             'amount': '50.00',
             'description': 'Missing type transaction',
-            'category': category.id,
+            'category_id': category.id,
             'date': '2024-01-15'
         }
         
@@ -222,7 +222,7 @@ class TestTransactionCreation:
         transaction_data = {
             'amount': '50.00',
             'description': 'Missing date transaction',
-            'category': category.id,
+            'category_id': category.id,
             'transaction_type': 'expense'
         }
         
@@ -243,7 +243,7 @@ class TestTransactionCreation:
             transaction_data = {
                 'amount': invalid_amount,
                 'description': f'Invalid amount test: {invalid_amount}',
-                'category': category.id,
+                'category_id': category.id,
                 'transaction_type': 'expense',
                 'date': '2024-01-15'
             }
@@ -262,7 +262,7 @@ class TestTransactionCreation:
         transaction_data = {
             'amount': '50.00',
             'description': 'Invalid type transaction',
-            'category': category.id,
+            'category_id': category.id,
             'transaction_type': 'invalid_type',
             'date': '2024-01-15'
         }
@@ -282,7 +282,7 @@ class TestTransactionCreation:
         transaction_data = {
             'amount': '50.00',
             'description': 'Future date transaction',
-            'category': category.id,
+            'category_id': category.id,
             'transaction_type': 'expense',
             'date': future_date
         }
@@ -301,7 +301,7 @@ class TestTransactionCreation:
         transaction_data = {
             'amount': '50.00',
             'description': 'Other user category transaction',
-            'category': other_category.id,
+            'category_id': other_category.id,
             'transaction_type': 'expense',
             'date': '2024-01-15'
         }
@@ -313,7 +313,7 @@ class TestTransactionCreation:
         )
         
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert 'category' in response.json()
+        assert 'category_id' in response.json()
     
     def test_create_transaction_unauthenticated_fails(self, api_client, sample_transaction_data):
         """Test that creating transaction without authentication fails."""
@@ -496,7 +496,7 @@ class TestTransactionUpdate:
         update_data = {
             'amount': '150.50',
             'description': 'Updated description',
-            'category': new_category.id,
+            'category_id': new_category.id,
             'transaction_type': 'income',
             'date': '2024-01-20'
         }
@@ -576,7 +576,7 @@ class TestTransactionUpdate:
         )
         
         update_data = {
-            'category': None
+            'category_id': None
         }
         
         response = authenticated_client.patch(
@@ -631,7 +631,7 @@ class TestTransactionUpdate:
         )
         
         update_data = {
-            'category': other_category.id
+            'category_id': other_category.id
         }
         
         response = authenticated_client.patch(
@@ -641,7 +641,7 @@ class TestTransactionUpdate:
         )
         
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert 'category' in response.json()
+        assert 'category_id' in response.json()
     
     def test_update_other_user_transaction_fails(self, authenticated_client, other_user, category):
         """Test that updating another user's transaction fails."""
@@ -1580,7 +1580,7 @@ class TestTransactionIntegration:
         create_data = {
             'amount': '125.75',
             'description': 'Initial transaction',
-            'category': category.id,
+            'category_id': category.id,
             'transaction_type': 'expense',
             'date': '2024-01-15'
         }
@@ -1683,7 +1683,7 @@ class TestTransactionIntegration:
             create_data = {
                 'amount': f'{i + 1}.00',
                 'description': f'Concurrent transaction {i + 1}',
-                'category': category.id,
+                'category_id': category.id,
                 'transaction_type': 'expense',
                 'date': date.today().isoformat()
             }
